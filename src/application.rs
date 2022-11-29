@@ -1,3 +1,4 @@
+use std::panic;
 use std::sync::{mpsc::Receiver, Arc};
 
 use crate::brush_menu;
@@ -36,10 +37,11 @@ async fn listen_for_events(state: &Arc<Mutex<State>>, events: &Receiver<Event>) 
   state.track_terminal_events(events);
 
   brush_menu::update_brush_menu(&mut state).await;
+  canvas::update_canvas(&mut state).await;
 }
 
 async fn render_ui(state: &Arc<Mutex<State>>) {
-  let state = state.lock().await;
+  let mut state = state.lock().await;
   brush_menu::render_brush_menu(&state).await;
-  canvas::render_canvas(&state).await;
+  canvas::render_canvas(&mut state).await;
 }

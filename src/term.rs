@@ -39,6 +39,11 @@ pub fn go_to(x: u16, y: u16) {
   print!("{}", termion::cursor::Goto(x + 1, y + 1));
 }
 
+pub fn print_at(item: &String, x: &u16, y: &u16) {
+  go_to(*x, *y);
+  print!("{}", item);
+}
+
 pub fn clear_all() {
   print!("{}", termion::clear::All);
 }

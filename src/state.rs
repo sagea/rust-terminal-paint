@@ -5,7 +5,7 @@ use termion::{
   terminal_size,
 };
 
-use crate::{brush::get_brush_list, line_processor::plot_line, term};
+use crate::{brush::get_brush_list, canvas::CanvasState, line_processor::plot_line, term};
 
 pub struct MouseEventTracker {
   pub left_pressed: Option<(u16, u16)>,
@@ -65,6 +65,7 @@ pub struct State {
   pub pressed_keys: HashSet<Key>,
   pub mouse_events: MouseEventTracker,
   pub terminal_size: (u16, u16),
+  pub canvas_state: CanvasState,
 }
 
 impl State {
@@ -106,13 +107,15 @@ impl State {
 impl Default for State {
   fn default() -> Self {
     let brushes = get_brush_list();
+    let terminal_size = term::size();
     State {
       selected_brush: brushes.get(0).unwrap().clone(),
       brush_list: brushes,
       brush_menu_width: 20,
       pressed_keys: HashSet::new(),
       mouse_events: MouseEventTracker::new(),
-      terminal_size: term::size(),
+      terminal_size,
+      canvas_state: CanvasState::new(terminal_size),
     }
   }
 }
