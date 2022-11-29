@@ -41,7 +41,7 @@ pub async fn update_canvas(state: &mut State) {
   if let Some(pos) = state.mouse_events.left_pressed {
     if pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end) {
       term::go_to(pos.0, pos.1);
-      print!("{}", state.selected_brush);
+      print!("{}", state.brush.selected);
     }
   }
 
@@ -50,7 +50,7 @@ pub async fn update_canvas(state: &mut State) {
     .left_hover
     .iter()
     .filter(|pos| pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end))
-    .map(|pos| (pos.0, pos.1, state.selected_brush.clone()))
+    .map(|pos| (pos.0, pos.1, state.brush.selected.clone()))
     .collect();
   state.canvas_state.add_updates(&updates);
 }

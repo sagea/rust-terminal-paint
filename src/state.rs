@@ -5,7 +5,12 @@ use termion::{
   terminal_size,
 };
 
-use crate::{brush::get_brush_list, canvas::CanvasState, line_processor::plot_line, term};
+use crate::{
+  brush::{get_brush_list, BrushState},
+  canvas::CanvasState,
+  line_processor::plot_line,
+  term,
+};
 
 pub struct MouseEventTracker {
   pub left_pressed: Option<(u16, u16)>,
@@ -59,8 +64,9 @@ impl MouseEventTracker {
 }
 
 pub struct State {
-  pub selected_brush: String,
-  pub brush_list: Vec<String>,
+  pub brush: BrushState,
+  // pub selected_brush: String,
+  // pub brush_list: Vec<String>,
   pub brush_menu_width: u16,
   pub pressed_keys: HashSet<Key>,
   pub mouse_events: MouseEventTracker,
@@ -76,9 +82,6 @@ impl State {
   }
   pub fn was_key_pressed(&self, key: &Key) -> bool {
     self.pressed_keys.contains(&key)
-  }
-  pub fn set_selected_item(&mut self, selected: String) {
-    self.selected_brush = selected;
   }
   pub fn track_terminal_events(&mut self, recv: &Receiver<Event>) {
     loop {
@@ -106,11 +109,12 @@ impl State {
 
 impl Default for State {
   fn default() -> Self {
-    let brushes = get_brush_list();
+    // let brushes = get_brush_list();
     let terminal_size = term::size();
     State {
-      selected_brush: brushes.get(0).unwrap().clone(),
-      brush_list: brushes,
+      brush: BrushState::new(),
+      // selected_brush: brushes.get(0).unwrap().clone(),
+      // brush_list: brushes,
       brush_menu_width: 20,
       pressed_keys: HashSet::new(),
       mouse_events: MouseEventTracker::new(),

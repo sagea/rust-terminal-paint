@@ -8,7 +8,7 @@ fn calculate_brush_menu_items(state: &State) -> Vec<(String, (u16, u16))> {
   let mut cur_x_pos: u16 = 0;
   let mut cur_y_pos: u16 = 0;
   let mut list = vec![];
-  for brush in state.brush_list.iter() {
+  for brush in state.brush.list.iter() {
     if cur_x_pos + 3 > state.brush_menu_width {
       cur_x_pos = 0;
       cur_y_pos += 3;
@@ -30,7 +30,7 @@ pub async fn update_brush_menu(state: &mut State) {
       return None;
     });
     if let Some(item) = selected {
-      state.set_selected_item(item.to_string());
+      state.brush.selected = item.to_string();
     }
   }
 }
@@ -45,7 +45,7 @@ pub async fn render_brush_menu(state: &State) {
   calculate_brush_menu_items(&state)
     .iter()
     .for_each(|(brush, (x, y))| {
-      let selected = brush == &state.selected_brush;
+      let selected = brush == &state.brush.selected;
       render_brush_menu_item(*x, *y, brush, selected);
     });
 }
