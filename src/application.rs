@@ -1,4 +1,3 @@
-use std::panic;
 use std::sync::{mpsc::Receiver, Arc};
 
 use crate::brush_menu;

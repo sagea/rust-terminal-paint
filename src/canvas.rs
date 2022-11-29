@@ -56,7 +56,6 @@ pub async fn update_canvas(state: &mut State) {
 }
 
 pub async fn render_canvas(state: &mut State) {
-  // term::print_at(&format!("length = {}", state.canvas_state.updates.len()), &10, &30);
   state.canvas_state.updates.iter().for_each(|(x, y, brush)| {
     term::print_at(brush, x, y);
   });
