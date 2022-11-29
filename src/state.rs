@@ -6,10 +6,7 @@ use termion::{
 };
 
 use crate::{
-  brush::{get_brush_list, BrushState},
-  canvas::CanvasState,
-  line_processor::plot_line,
-  term,
+  brush::BrushState, canvas::CanvasState, line_processor::plot_line, term, tool::ToolState,
 };
 
 pub struct MouseEventTracker {
@@ -65,8 +62,7 @@ impl MouseEventTracker {
 
 pub struct State {
   pub brush: BrushState,
-  // pub selected_brush: String,
-  // pub brush_list: Vec<String>,
+  pub tools: ToolState,
   pub brush_menu_width: u16,
   pub pressed_keys: HashSet<Key>,
   pub mouse_events: MouseEventTracker,
@@ -109,12 +105,10 @@ impl State {
 
 impl Default for State {
   fn default() -> Self {
-    // let brushes = get_brush_list();
     let terminal_size = term::size();
     State {
       brush: BrushState::new(),
-      // selected_brush: brushes.get(0).unwrap().clone(),
-      // brush_list: brushes,
+      tools: ToolState::new(),
       brush_menu_width: 20,
       pressed_keys: HashSet::new(),
       mouse_events: MouseEventTracker::new(),

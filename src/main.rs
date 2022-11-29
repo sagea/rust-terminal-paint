@@ -6,6 +6,7 @@ mod line_processor;
 mod point;
 mod state;
 mod term;
+mod tool;
 
 use crate::application::start_application;
 
