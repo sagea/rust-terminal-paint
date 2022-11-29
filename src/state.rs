@@ -1,8 +1,7 @@
 use std::{collections::HashSet, sync::mpsc::Receiver};
 
 use termion::{
-  event::{Event, Key, MouseButton, MouseEvent},
-  terminal_size,
+  event::{Event, Key, MouseButton, MouseEvent}
 };
 
 use crate::{

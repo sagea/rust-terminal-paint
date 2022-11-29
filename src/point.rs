@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, ops::Add};
+use std::{ops::Add};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
