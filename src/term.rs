@@ -1,7 +1,8 @@
 use std::io::Stdout;
 use std::{io::stdout, sync::mpsc};
-use termion::color;
+use termion::event::MouseEvent;
 use termion::raw::IntoRawMode;
+use termion::{color, terminal_size};
 use termion::{event::Event, input::MouseTerminal};
 
 pub fn setup_stdin() -> mpsc::Receiver<Event> {
@@ -11,7 +12,20 @@ pub fn setup_stdin() -> mpsc::Receiver<Event> {
   let stdin = stdin();
   std::thread::spawn(move || {
     for c in stdin.events() {
-      sender.send(c.unwrap()).unwrap();
+      let event = c.unwrap();
+      let e = match &event {
+        Event::Mouse(mouse_event) => Some(Event::Mouse(match &mouse_event {
+          MouseEvent::Press(mouse_btn, x, y) => MouseEvent::Press(*mouse_btn, x - 1, y - 1),
+          MouseEvent::Release(x, y) => MouseEvent::Release(x - 1, y - 1),
+          MouseEvent::Hold(x, y) => MouseEvent::Hold(x - 1, y - 1),
+        })),
+        _ => None,
+      };
+      if let Some(ev) = e {
+        sender.send(ev).unwrap();
+      } else {
+        sender.send(event).unwrap();
+      }
     }
   });
   return receiver;
@@ -52,4 +66,8 @@ pub fn draw_vertical_line(x: u16, y_start: u16, y_end: u16, str: String) {
     go_to(x, y);
     print!("{str}");
   }
+}
+
+pub fn size() -> (u16, u16) {
+  terminal_size().unwrap()
 }

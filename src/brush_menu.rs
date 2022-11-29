@@ -38,7 +38,7 @@ pub async fn update_brush_menu(state: &mut State) {
 pub async fn render_brush_menu(state: &State) {
   term::draw_vertical_line(
     state.brush_menu_width,
-    1,
+    0,
     state.terminal_size.1,
     "|".to_string(),
   );

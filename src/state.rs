@@ -5,7 +5,7 @@ use termion::{
   terminal_size,
 };
 
-use crate::{brush::get_brush_list, line_processor::plot_line};
+use crate::{brush::get_brush_list, line_processor::plot_line, term};
 
 pub struct MouseEventTracker {
   pub left_pressed: Option<(u16, u16)>,
@@ -112,7 +112,7 @@ impl Default for State {
       brush_menu_width: 20,
       pressed_keys: HashSet::new(),
       mouse_events: MouseEventTracker::new(),
-      terminal_size: terminal_size().unwrap(),
+      terminal_size: term::size(),
     }
   }
 }
