@@ -6,7 +6,8 @@ use termion::{
 };
 
 use crate::{
-  brush::BrushState, canvas::CanvasState, line_processor::plot_line, term, tool::ToolState, point::Point,
+  brush::BrushState, canvas::CanvasState, line_processor::plot_line, point::Point, term,
+  tool::ToolState,
 };
 
 pub struct MouseEventTracker {

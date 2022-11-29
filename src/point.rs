@@ -1,5 +1,4 @@
-use std::{ops::Add, borrow::Borrow};
-
+use std::{borrow::Borrow, ops::Add};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
@@ -39,10 +38,10 @@ impl Point {
 impl Add for Point {
   type Output = Point;
   fn add(self, rhs: Self) -> Self::Output {
-      Point {
-        x: self.x + rhs.x,
-        y: self.y + rhs.y,
-      }
+    Point {
+      x: self.x + rhs.x,
+      y: self.y + rhs.y,
+    }
   }
 }
 
@@ -51,8 +50,8 @@ impl<'a, 'b> Add<&'b Point> for &'a Point {
 
   fn add(self, other: &'b Point) -> Point {
     Point {
-          x: self.x + other.x,
-          y: self.y + other.y,
-      }
+      x: self.x + other.x,
+      y: self.y + other.y,
+    }
   }
 }

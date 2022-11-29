@@ -44,25 +44,21 @@ pub async fn update_canvas(state: &mut State) {
   let canvas_dimensions_end = state.terminal_size;
   let updates = match &state.tools.selected {
     // todo: consolidate Tool::Brush and Tool::Erasor
-    Tool::Brush => {
-      state
-        .mouse_events
-        .left_hover
-        .iter()
-        .filter(|pos| pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end))
-        .map(|pos| (*pos, state.brush.selected.clone()))
-        .collect()
-    },
-    Tool::Erasor => {
-      state
-        .mouse_events
-        .left_hover
-        .iter()
-        .filter(|pos| pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end))
-        .map(|pos| (*pos, " ".to_string()))
-        .collect()
-    }
-    _ => vec![]
+    Tool::Brush => state
+      .mouse_events
+      .left_hover
+      .iter()
+      .filter(|pos| pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end))
+      .map(|pos| (*pos, state.brush.selected.clone()))
+      .collect(),
+    Tool::Erasor => state
+      .mouse_events
+      .left_hover
+      .iter()
+      .filter(|pos| pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end))
+      .map(|pos| (*pos, " ".to_string()))
+      .collect(),
+    _ => vec![],
   };
   state.canvas_state.add_updates(&updates);
 }
