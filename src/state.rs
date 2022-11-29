@@ -6,15 +6,15 @@ use termion::{
 };
 
 use crate::{
-  brush::BrushState, canvas::CanvasState, line_processor::plot_line, term, tool::ToolState,
+  brush::BrushState, canvas::CanvasState, line_processor::plot_line, term, tool::ToolState, point::Point,
 };
 
 pub struct MouseEventTracker {
-  pub left_pressed: Option<(u16, u16)>,
-  pub left_released: Option<(u16, u16)>,
-  pub left_held: Option<(u16, u16)>,
-  pub left_hover: Vec<(u16, u16)>,
-  pub left_last_known: Option<(u16, u16)>,
+  pub left_pressed: Option<Point>,
+  pub left_released: Option<Point>,
+  pub left_held: Option<Point>,
+  pub left_hover: Vec<Point>,
+  pub left_last_known: Option<Point>,
 }
 impl MouseEventTracker {
   pub fn new() -> Self {
@@ -30,18 +30,18 @@ impl MouseEventTracker {
     match &event {
       MouseEvent::Press(mouse_button, x, y) => match &mouse_button {
         MouseButton::Left => {
-          let pos = (*x, *y);
+          let pos = Point::new(*x, *y);
           self.left_pressed = Some(pos);
           self.left_last_known = Some(pos);
         }
         _ => (),
       },
       MouseEvent::Release(x, y) => {
-        self.left_released = Some((*x, *y));
+        self.left_released = Some(Point::new(*x, *y));
         self.left_last_known = None;
       }
       MouseEvent::Hold(x, y) => {
-        let pos = (*x, *y);
+        let pos = Point::new(*x, *y);
         if let Some(v) = self.left_last_known {
           self.left_held = Some(pos);
           self.left_hover = plot_line(pos, v);
@@ -66,7 +66,7 @@ pub struct State {
   pub brush_menu_width: u16,
   pub pressed_keys: HashSet<Key>,
   pub mouse_events: MouseEventTracker,
-  pub terminal_size: (u16, u16),
+  pub terminal_size: Point,
   pub canvas_state: CanvasState,
 }
 
@@ -81,7 +81,7 @@ impl State {
   }
   pub fn track_terminal_events(&mut self, recv: &Receiver<Event>) {
     loop {
-      self.terminal_size = terminal_size().unwrap();
+      self.terminal_size = term::size();
       if let Ok(result) = recv.try_recv() {
         match &result {
           Event::Key(key) => {

@@ -5,6 +5,8 @@ use termion::raw::IntoRawMode;
 use termion::{color, terminal_size};
 use termion::{event::Event, input::MouseTerminal};
 
+use crate::point::Point;
+
 pub fn setup_stdin() -> mpsc::Receiver<Event> {
   use std::io::stdin;
   use termion::input::TermRead;
@@ -73,6 +75,7 @@ pub fn draw_vertical_line(x: u16, y_start: u16, y_end: u16, str: String) {
   }
 }
 
-pub fn size() -> (u16, u16) {
-  terminal_size().unwrap()
+pub fn size() -> Point {
+  let size = terminal_size().unwrap();
+  Point::from_tuple(&size)
 }

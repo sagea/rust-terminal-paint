@@ -4,7 +4,7 @@ use crate::point::Point;
 use crate::state::State;
 use crate::term;
 
-fn calculate_brush_menu_items(state: &State) -> Vec<(String, (u16, u16))> {
+fn calculate_brush_menu_items(state: &State) -> Vec<(String, Point)> {
   let mut cur_x_pos: u16 = 0;
   let mut cur_y_pos: u16 = 0;
   let mut list = vec![];
@@ -13,7 +13,7 @@ fn calculate_brush_menu_items(state: &State) -> Vec<(String, (u16, u16))> {
       cur_x_pos = 0;
       cur_y_pos += 3;
     }
-    list.push((brush.clone(), (cur_x_pos, cur_y_pos)));
+    list.push((brush.clone(), Point::new(cur_x_pos, cur_y_pos)));
     cur_x_pos += 3;
   }
   list
@@ -23,7 +23,7 @@ pub async fn update_brush_menu(state: &mut State) {
   if let Some(pressed_position) = state.mouse_events.left_pressed {
     let s = calculate_brush_menu_items(&state);
     let selected = s.iter().find_map(|(brush, start)| {
-      let end = (start.0 + 3, start.1 + 3);
+      let end = start + &Point::new(3, 3);
       if pressed_position.is_inbetween(*start, end) {
         return Some(brush);
       }
@@ -39,14 +39,14 @@ pub async fn render_brush_menu(state: &State) {
   term::draw_vertical_line(
     state.brush_menu_width,
     0,
-    state.terminal_size.1,
+    state.terminal_size.y,
     "|".to_string(),
   );
   calculate_brush_menu_items(&state)
     .iter()
-    .for_each(|(brush, (x, y))| {
+    .for_each(|(brush, pt)| {
       let selected = brush == &state.brush.selected;
-      render_brush_menu_item(*x, *y, brush, selected);
+      render_brush_menu_item(pt.x, pt.y, brush, selected);
     });
 }
 
