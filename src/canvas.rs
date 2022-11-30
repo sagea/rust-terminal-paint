@@ -66,7 +66,7 @@ pub async fn update_canvas(state: &mut State) {
 pub async fn render_canvas(state: &mut State) {
   state.canvas_state.updates.iter().for_each(|single_update| {
     single_update.iter().for_each(|(pos, brush)| {
-      term::print_at(brush, &pos.x, &pos.y);
+      term::print_at(brush, *pos);
     })
   });
   state.canvas_state.commit_updates();

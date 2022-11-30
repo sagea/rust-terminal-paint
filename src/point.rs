@@ -1,4 +1,4 @@
-use std::{ops::Add};
+use std::ops::Add;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
@@ -33,9 +33,15 @@ impl Point {
     }
     return true;
   }
+
+  pub fn zero() -> Self {
+    Point::from(0)
+  }
 }
 
-impl Add for Point {
+// todo: Figure out the right way to handle all the reference cases.
+//       This implementation is verbose and rough.
+impl Add<Point> for Point {
   type Output = Point;
   fn add(self, rhs: Self) -> Self::Output {
     Point {
@@ -45,13 +51,87 @@ impl Add for Point {
   }
 }
 
-impl<'a, 'b> Add<&'b Point> for &'a Point {
+impl Add<&Point> for &Point {
   type Output = Point;
 
-  fn add(self, other: &'b Point) -> Point {
+  fn add(self, other: &Point) -> Point {
     Point {
       x: self.x + other.x,
       y: self.y + other.y,
     }
   }
 }
+
+impl Add<Point> for &Point {
+  type Output = Point;
+
+  fn add(self, other: Point) -> Point {
+    Point {
+      x: self.x + other.x,
+      y: self.y + other.y,
+    }
+  }
+}
+
+impl Add<&Point> for Point {
+  type Output = Point;
+
+  fn add(self, other: &Point) -> Point {
+    Point {
+      x: self.x + other.x,
+      y: self.y + other.y,
+    }
+  }
+}
+
+impl Add<(u16, u16)> for Point {
+  type Output = Point;
+  fn add(self, other: (u16, u16)) -> Point {
+    Point {
+      x: self.x + other.0,
+      y: self.y + other.1,
+    }
+  }
+}
+
+impl Add<&(u16, u16)> for &Point {
+  type Output = Point;
+
+  fn add(self, other: &(u16, u16)) -> Point {
+    Point {
+      x: self.x + other.0,
+      y: self.y + other.1,
+    }
+  }
+}
+
+impl Add<(u16, u16)> for &Point {
+  type Output = Point;
+  fn add(self, other: (u16, u16)) -> Point {
+    Point {
+      x: self.x + other.0,
+      y: self.y + other.1,
+    }
+  }
+}
+
+impl Add<&(u16, u16)> for Point {
+  type Output = Point;
+
+  fn add(self, other: &(u16, u16)) -> Point {
+    Point {
+      x: self.x + other.0,
+      y: self.y + other.1,
+    }
+  }
+}
+// impl<'a, 'b> Add<&'b (i32, i32)> for &'a Point {
+//   type Output = Point;
+
+//   fn add(self, other: &'b (i32, i32)) -> Point {
+//     Point {
+//       x: self.x + other.0 as u16,
+//       y: self.y + other.1 as u16,
+//     }
+//   }
+// }

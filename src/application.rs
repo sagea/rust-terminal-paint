@@ -1,7 +1,7 @@
 use std::sync::{mpsc::Receiver, Arc};
 
-use crate::brush_menu;
 use crate::canvas;
+use crate::side_menu;
 use crate::state::State;
 use crate::term as t;
 use termion::event::Event;
@@ -35,12 +35,12 @@ async fn listen_for_events(state: &Arc<Mutex<State>>, events: &Receiver<Event>) 
   state.reset_terminal_events();
   state.track_terminal_events(events);
 
-  brush_menu::update_brush_menu(&mut state).await;
+  side_menu::update_side_menu(&mut state).await;
   canvas::update_canvas(&mut state).await;
 }
 
 async fn render_ui(state: &Arc<Mutex<State>>) {
   let mut state = state.lock().await;
-  brush_menu::render_brush_menu(&state).await;
+  side_menu::render_side_menu(&state).await;
   canvas::render_canvas(&mut state).await;
 }

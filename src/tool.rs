@@ -1,4 +1,4 @@
-#[derive(strum_macros::Display, PartialEq, Eq)]
+#[derive(strum_macros::Display, PartialEq, Eq, Clone, Copy)]
 pub enum Tool {
   Brush,
   Paint,

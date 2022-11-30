@@ -1,8 +1,6 @@
 use std::{collections::HashSet, sync::mpsc::Receiver};
 
-use termion::{
-  event::{Event, Key, MouseButton, MouseEvent}
-};
+use termion::event::{Event, Key, MouseButton, MouseEvent};
 
 use crate::{
   brush::BrushState, canvas::CanvasState, line_processor::plot_line, point::Point, term,
