@@ -1,4 +1,3 @@
-use std::fmt::format;
 use std::io::Stdout;
 use std::{io::stdout, sync::mpsc};
 use termion::event::MouseEvent;
