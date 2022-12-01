@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet};
 
 use crate::{point::Point, state::State, term, tool::Tool};
 
@@ -20,6 +20,7 @@ impl SingleCanvasUpdate {
 }
 
 pub struct CanvasState {
+  size: Point,
   full_buffer: Vec<String>,
   updates: Vec<SingleCanvasUpdate>,
 }
@@ -29,6 +30,7 @@ impl CanvasState {
     let row = (0..size.x + 1).map(|_| " ").collect::<String>();
     let full_buffer = (0..size.y).map(|_| row.clone()).collect::<Vec<String>>();
     CanvasState {
+      size,
       full_buffer,
       updates: vec![],
     }
@@ -41,6 +43,17 @@ impl CanvasState {
     }
     return None;
   }
+
+  pub fn clear_all(&mut self) {
+    let mut pixels = vec![];
+    for x in 0..self.size.x {
+      for y in 0..self.size.y {
+        pixels.push(Point::new(x, y));
+      }
+    }
+    self.add_updates(SingleCanvasUpdate::new(" ".to_string(), pixels));
+  }
+
   pub fn add_updates(&mut self, updates: SingleCanvasUpdate) {
     self.updates.push(updates);
   }

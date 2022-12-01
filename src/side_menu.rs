@@ -8,6 +8,7 @@ use crate::{border, term};
 
 pub async fn update_side_menu(state: &mut State) {
   ToolMenu::update(state, Point::zero());
+  ClearButton::update(state, Point::new(0, 10));
   BrushMenu::update(state, Point::new(0, 20));
 }
 
@@ -19,6 +20,7 @@ pub async fn render_side_menu(state: &State) {
     "|".to_string(),
   );
   ToolMenu::render(&state, Point::zero());
+  ClearButton::render(&state, Point::new(0, 10));
   BrushMenu::render(&state, Point::zero() + (0, 20));
 }
 
@@ -30,6 +32,23 @@ pub fn render_brush_menu_item(pos: &Point, brush: &String, selected: bool) {
   term::draw_lines_at(&btn.lines, pos);
   if selected {
     print!("{}", color::Fg(color::Reset));
+  }
+}
+
+struct ClearButton {
+}
+impl ClearButton {
+
+  pub fn update(state: &mut State, at: Point) {
+    if let Some(pressed_position) = state.mouse_events.left_pressed {
+      let end = at + calculate_boder_size(&"Clear All".to_string());
+      if pressed_position.is_inbetween(at, end) {
+        state.canvas_state.clear_all();
+      }
+    }
+  }
+  pub fn render(state: &State, at: Point) {
+    render_brush_menu_item(&at, &"Clear All".to_string(), false);
   }
 }
 
