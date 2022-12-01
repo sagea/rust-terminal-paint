@@ -2,9 +2,26 @@ use std::collections::HashSet;
 
 use crate::{point::Point, state::State, term, tool::Tool};
 
+pub struct SingleCanvasUpdate {
+  pub brush: String,
+  pub pixels: Vec<Point>,
+}
+
+impl SingleCanvasUpdate {
+  pub fn new(brush: String, pixels: Vec<Point>) -> SingleCanvasUpdate {
+    SingleCanvasUpdate { brush, pixels }
+  }
+  pub fn empty() -> SingleCanvasUpdate {
+    SingleCanvasUpdate {
+      brush: "".to_string(),
+      pixels: vec![],
+    }
+  }
+}
+
 pub struct CanvasState {
   full_buffer: Vec<String>,
-  updates: Vec<Vec<(Point, String)>>,
+  updates: Vec<SingleCanvasUpdate>,
 }
 
 impl CanvasState {
@@ -24,13 +41,13 @@ impl CanvasState {
     }
     return None;
   }
-  pub fn add_updates(&mut self, updates: &Vec<(Point, String)>) {
-    self.updates.push(updates.to_vec());
+  pub fn add_updates(&mut self, updates: SingleCanvasUpdate) {
+    self.updates.push(updates);
   }
 
   pub fn commit_updates(&mut self) {
     for single_update in &self.updates {
-      for (pt, brush) in single_update {
+      for pt in &single_update.pixels {
         if let Some(row) = self.full_buffer.get_mut(pt.y as usize) {
           row.replace_range(
             row
@@ -38,7 +55,7 @@ impl CanvasState {
               .nth(pt.x as usize)
               .map(|(pos, ch)| (pos..pos + ch.len_utf8()))
               .unwrap(),
-            &brush,
+            &single_update.brush,
           );
         }
       }
@@ -83,46 +100,48 @@ pub fn fill_paint(state: &State, start: Point, containment: &(Point, Point)) -> 
 pub fn handle_tool_erasor(
   state: &State,
   canvas_containment: &(Point, Point),
-) -> Vec<(Point, String)> {
-  state
-    .mouse_events
-    .left_hover
-    .iter()
-    .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
-    .map(|pos| (*pos, " ".to_string()))
-    .collect()
+) -> SingleCanvasUpdate {
+  SingleCanvasUpdate::new(
+    " ".to_string(),
+    state
+      .mouse_events
+      .left_hover
+      .iter()
+      .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
+      .map(|pos| *pos)
+      .collect::<Vec<Point>>(),
+  )
 }
 
-pub fn handle_tool_brush(
-  state: &State,
-  canvas_containment: &(Point, Point),
-) -> Vec<(Point, String)> {
-  state
-    .mouse_events
-    .left_hover
-    .iter()
-    .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
-    .map(|pos| (*pos, state.brush.selected.clone()))
-    .collect()
+pub fn handle_tool_brush(state: &State, canvas_containment: &(Point, Point)) -> SingleCanvasUpdate {
+  SingleCanvasUpdate::new(
+    state.brush.selected.clone(),
+    state
+      .mouse_events
+      .left_hover
+      .iter()
+      .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
+      .map(|pos| *pos)
+      .collect::<Vec<Point>>(),
+  )
 }
 
 pub fn handle_tool_paint(
   state: &mut State,
   canvas_containment: &(Point, Point),
-) -> Vec<(Point, String)> {
+) -> SingleCanvasUpdate {
   let canvas_dimensions_start = Point::new(state.brush_menu_width, 0);
   let canvas_dimensions_end = state.terminal_size;
   let f = &state;
   if let Some(pos) = f.mouse_events.left_pressed {
     if pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end) {
-      let mut result = vec![];
-      for pt in fill_paint(&state, pos, canvas_containment) {
-        result.push((pt, state.brush.selected.clone()));
-      }
-      return result;
+      return SingleCanvasUpdate::new(
+        state.brush.selected.clone(),
+        fill_paint(&state, pos, canvas_containment),
+      );
     }
   }
-  return vec![];
+  return SingleCanvasUpdate::empty();
 }
 
 pub async fn update_canvas(state: &mut State) {
@@ -131,15 +150,15 @@ pub async fn update_canvas(state: &mut State) {
     Tool::Brush => handle_tool_brush(state, &canvas_containment),
     Tool::Erasor => handle_tool_erasor(state, &canvas_containment),
     Tool::Paint => handle_tool_paint(state, &canvas_containment),
-    _ => vec![],
+    _ => SingleCanvasUpdate::empty(),
   };
-  state.canvas_state.add_updates(&updates);
+  state.canvas_state.add_updates(updates);
 }
 
 pub async fn render_canvas(state: &mut State) {
   state.canvas_state.updates.iter().for_each(|single_update| {
-    single_update.iter().for_each(|(pos, brush)| {
-      term::print_at(brush, *pos);
+    single_update.pixels.iter().for_each(|pos| {
+      term::print_at(&single_update.brush, *pos);
     })
   });
   state.canvas_state.commit_updates();
