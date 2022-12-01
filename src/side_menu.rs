@@ -35,10 +35,8 @@ pub fn render_brush_menu_item(pos: &Point, brush: &String, selected: bool) {
   }
 }
 
-struct ClearButton {
-}
+struct ClearButton {}
 impl ClearButton {
-
   pub fn update(state: &mut State, at: Point) {
     if let Some(pressed_position) = state.mouse_events.left_pressed {
       let end = at + calculate_boder_size(&"Clear All".to_string());

@@ -1,4 +1,4 @@
-use std::{collections::HashSet};
+use std::collections::HashSet;
 
 use crate::{point::Point, state::State, term, tool::Tool};
 
