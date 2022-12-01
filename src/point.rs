@@ -31,7 +31,7 @@ impl Point {
     if self.y > b.y {
       return false;
     }
-    return true;
+    true
   }
 
   pub fn zero() -> Self {

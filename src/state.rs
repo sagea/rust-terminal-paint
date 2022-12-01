@@ -1,6 +1,6 @@
 use std::{collections::HashSet, sync::mpsc::Receiver};
 
-use termion::event::{Event, Key, MouseButton, MouseEvent};
+use termion::event::Key;
 
 use crate::{
   brush::BrushState,
@@ -79,7 +79,7 @@ impl State {
     }
   }
   pub fn was_key_pressed(&self, key: &Key) -> bool {
-    self.pressed_keys.contains(&key)
+    self.pressed_keys.contains(key)
   }
   pub fn track_terminal_events(&mut self, recv: &Receiver<TEvent>) {
     loop {

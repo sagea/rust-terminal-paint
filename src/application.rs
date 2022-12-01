@@ -5,7 +5,7 @@ use crate::side_menu;
 use crate::state::State;
 use crate::term as t;
 use crate::term::TEvent;
-use termion::event::Event;
+
 use tokio::sync::Mutex;
 
 pub async fn start_application() {

@@ -41,7 +41,7 @@ impl CanvasState {
         return Some(pixel_info.1.to_string());
       }
     }
-    return None;
+    None
   }
 
   pub fn clear_all(&mut self) {
@@ -121,7 +121,7 @@ pub fn handle_tool_erasor(
       .left_hover
       .iter()
       .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
-      .map(|pos| *pos)
+      .copied()
       .collect::<Vec<Point>>(),
   )
 }
@@ -134,7 +134,7 @@ pub fn handle_tool_brush(state: &State, canvas_containment: &(Point, Point)) -> 
       .left_hover
       .iter()
       .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
-      .map(|pos| *pos)
+      .copied()
       .collect::<Vec<Point>>(),
   )
 }
@@ -150,11 +150,11 @@ pub fn handle_tool_paint(
     if pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end) {
       return SingleCanvasUpdate::new(
         state.brush.selected.clone(),
-        fill_paint(&state, pos, canvas_containment),
+        fill_paint(state, pos, canvas_containment),
       );
     }
   }
-  return SingleCanvasUpdate::empty();
+  SingleCanvasUpdate::empty()
 }
 
 pub async fn update_canvas(state: &mut State) {
@@ -163,7 +163,6 @@ pub async fn update_canvas(state: &mut State) {
     Tool::Brush => handle_tool_brush(state, &canvas_containment),
     Tool::Erasor => handle_tool_erasor(state, &canvas_containment),
     Tool::Paint => handle_tool_paint(state, &canvas_containment),
-    _ => SingleCanvasUpdate::empty(),
   };
   state.canvas_state.add_updates(updates);
 }

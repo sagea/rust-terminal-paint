@@ -27,7 +27,7 @@ pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
       let event = c.unwrap();
       let e = match &event {
         Event::Mouse(mouse_event) => Some(match &mouse_event {
-          MouseEvent::Press(mouse_btn, x, y) => TEvent::MouseDown(Point::new(x - 1, y - 1)),
+          MouseEvent::Press(_mouse_btn, x, y) => TEvent::MouseDown(Point::new(x - 1, y - 1)),
           MouseEvent::Release(x, y) => TEvent::MouseUp(Point::new(x - 1, y - 1)),
           MouseEvent::Hold(x, y) => TEvent::Drag(Point::new(x - 1, y - 1)),
         }),
@@ -39,7 +39,7 @@ pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
       }
     }
   });
-  return receiver;
+  receiver
 }
 
 pub fn setup_stdout() -> MouseTerminal<termion::raw::RawTerminal<Stdout>> {
@@ -55,7 +55,7 @@ pub fn print_at(item: &String, pos: Point) {
   print!("{}", item);
 }
 
-pub fn draw_lines_at(lines: &Vec<String>, pos: &Point) {
+pub fn draw_lines_at(lines: &[String], pos: &Point) {
   let result = lines
     .iter()
     .enumerate()

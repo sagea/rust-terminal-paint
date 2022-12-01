@@ -1,11 +1,11 @@
 use crate::point::Point;
 
-static BTL: &'static str = "┌";
-static BTR: &'static str = "┐";
-static BBL: &'static str = "└";
-static BBR: &'static str = "┘";
-static BV: &'static str = "|";
-static BH: &'static str = "─";
+static BTL: &str = "┌";
+static BTR: &str = "┐";
+static BBL: &str = "└";
+static BBR: &str = "┘";
+static BV: &str = "|";
+static BH: &str = "─";
 
 pub struct BorderedText {
   pub size: Point,
@@ -29,7 +29,7 @@ pub fn draw_boder(text: String) -> BorderedText {
   }
 }
 
-pub fn calculate_boder_size(text: &String) -> Point {
+pub fn calculate_boder_size(text: &str) -> Point {
   let text_len = text.chars().count() as u16;
   Point::new(text_len + 2, 3)
 }
