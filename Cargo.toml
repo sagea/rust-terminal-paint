@@ -9,3 +9,4 @@ edition = "2021"
 termion = "2.0.1"
 tokio = { version = "1.22.0", features = ["full"] }
 strum_macros = "0.24.3"
+impl_ops = "0.1.1"

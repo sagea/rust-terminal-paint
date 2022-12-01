@@ -33,14 +33,3 @@ pub fn calculate_boder_size(text: &str) -> Point {
   let text_len = text.chars().count() as u16;
   Point::new(text_len + 2, 3)
 }
-
-// pub struct BText {
-//   pub text: String,
-//   pub size: Point,
-// }
-
-// impl BText {
-//   pub fn new(text: String) -> Self {
-//     BText { text: text }
-//   }
-// }

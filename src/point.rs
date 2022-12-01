@@ -1,4 +1,5 @@
-use std::ops::Add;
+use impl_ops::impl_op;
+use std::ops;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point {
@@ -38,100 +39,37 @@ impl Point {
     Point::from(0)
   }
 }
+type TuplePoint = (u16, u16);
+impl_op_ex!(+ |a: &Point, b: &Point| -> Point { Point { x: a.x + b.x, y: a.y + b.y } });
+impl_op_ex!(+ |a: &Point, b: &TuplePoint| -> Point { Point { x: a.x + b.0, y: a.y + b.1 } });
+impl_op_ex!(+ |a: &TuplePoint, b: &Point| -> Point { Point { x: a.0 + b.x, y: a.1 + b.y } });
 
-// todo: Figure out the right way to handle all the reference cases.
-//       This implementation is verbose and rough.
-impl Add<Point> for Point {
-  type Output = Point;
-  fn add(self, rhs: Self) -> Self::Output {
-    Point {
-      x: self.x + rhs.x,
-      y: self.y + rhs.y,
-    }
+#[cfg(test)]
+mod tests {
+  use crate::point::Point;
+  #[allow(clippy::op_ref)]
+  #[test]
+  fn it_should_add_two_points_together() {
+    let a = Point::new(1, 2);
+    let b = Point::new(4, 5);
+    let result = Point::new(5, 7);
+    assert_eq!(a + b, result);
+    assert_eq!(&a + &b, result);
+    assert_eq!(&a + b, result);
+    assert_eq!(a + &b, result);
+  }
+  #[test]
+  fn it_should_add_a_u16_tutple_to_a_point() {
+    let a = Point::new(1, 2);
+    let b = (4, 5);
+    let result = Point::new(5, 7);
+    assert_eq!(a + b, result);
+    assert_eq!(a + &b, result);
+    assert_eq!(a + &b, result);
+    assert_eq!(&a + b, result);
+    assert_eq!(b + a, result);
+    assert_eq!(&b + &a, result);
+    assert_eq!(&b + a, result);
+    assert_eq!(b + &a, result);
   }
 }
-
-impl Add<&Point> for &Point {
-  type Output = Point;
-
-  fn add(self, other: &Point) -> Point {
-    Point {
-      x: self.x + other.x,
-      y: self.y + other.y,
-    }
-  }
-}
-
-impl Add<Point> for &Point {
-  type Output = Point;
-
-  fn add(self, other: Point) -> Point {
-    Point {
-      x: self.x + other.x,
-      y: self.y + other.y,
-    }
-  }
-}
-
-impl Add<&Point> for Point {
-  type Output = Point;
-
-  fn add(self, other: &Point) -> Point {
-    Point {
-      x: self.x + other.x,
-      y: self.y + other.y,
-    }
-  }
-}
-
-impl Add<(u16, u16)> for Point {
-  type Output = Point;
-  fn add(self, other: (u16, u16)) -> Point {
-    Point {
-      x: self.x + other.0,
-      y: self.y + other.1,
-    }
-  }
-}
-
-impl Add<&(u16, u16)> for &Point {
-  type Output = Point;
-
-  fn add(self, other: &(u16, u16)) -> Point {
-    Point {
-      x: self.x + other.0,
-      y: self.y + other.1,
-    }
-  }
-}
-
-impl Add<(u16, u16)> for &Point {
-  type Output = Point;
-  fn add(self, other: (u16, u16)) -> Point {
-    Point {
-      x: self.x + other.0,
-      y: self.y + other.1,
-    }
-  }
-}
-
-impl Add<&(u16, u16)> for Point {
-  type Output = Point;
-
-  fn add(self, other: &(u16, u16)) -> Point {
-    Point {
-      x: self.x + other.0,
-      y: self.y + other.1,
-    }
-  }
-}
-// impl<'a, 'b> Add<&'b (i32, i32)> for &'a Point {
-//   type Output = Point;
-
-//   fn add(self, other: &'b (i32, i32)) -> Point {
-//     Point {
-//       x: self.x + other.0 as u16,
-//       y: self.y + other.1 as u16,
-//     }
-//   }
-// }

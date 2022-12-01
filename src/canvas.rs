@@ -175,3 +175,13 @@ pub async fn render_canvas(state: &mut State) {
   });
   state.canvas_state.commit_updates();
 }
+
+pub struct Canvas {}
+impl Canvas {
+  pub async fn update(&mut self, state: &mut State) {
+    update_canvas(state).await;
+  }
+  pub async fn render(&mut self, state: &mut State) {
+    render_canvas(state).await;
+  }
+}

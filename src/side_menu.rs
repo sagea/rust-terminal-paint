@@ -129,3 +129,13 @@ impl BrushMenu {
       });
   }
 }
+
+pub struct SideMenu {}
+impl SideMenu {
+  pub async fn update(&mut self, state: &mut State) {
+    update_side_menu(state).await;
+  }
+  pub async fn render(&mut self, state: &mut State) {
+    render_side_menu(state).await;
+  }
+}
