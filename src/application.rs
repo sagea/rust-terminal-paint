@@ -4,6 +4,7 @@ use crate::canvas;
 use crate::side_menu;
 use crate::state::State;
 use crate::term as t;
+use crate::term::TEvent;
 use termion::event::Event;
 use tokio::sync::Mutex;
 
@@ -30,7 +31,7 @@ pub async fn start_application() {
   drop(stdout);
 }
 
-async fn listen_for_events(state: &Arc<Mutex<State>>, events: &Receiver<Event>) {
+async fn listen_for_events(state: &Arc<Mutex<State>>, events: &Receiver<TEvent>) {
   let mut state = state.lock().await;
   state.reset_terminal_events();
   state.track_terminal_events(events);

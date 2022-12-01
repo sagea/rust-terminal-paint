@@ -3,7 +3,11 @@ use std::{collections::HashSet, sync::mpsc::Receiver};
 use termion::event::{Event, Key, MouseButton, MouseEvent};
 
 use crate::{
-  brush::BrushState, canvas::CanvasState, line_processor::plot_line, point::Point, term,
+  brush::BrushState,
+  canvas::CanvasState,
+  line_processor::plot_line,
+  point::Point,
+  term::{self, TEvent},
   tool::ToolState,
 };
 
@@ -14,6 +18,7 @@ pub struct MouseEventTracker {
   pub left_hover: Vec<Point>,
   pub left_last_known: Option<Point>,
 }
+
 impl MouseEventTracker {
   pub fn new() -> Self {
     MouseEventTracker {
@@ -24,32 +29,31 @@ impl MouseEventTracker {
       left_last_known: None,
     }
   }
-  pub fn handle_mouse_event(&mut self, event: &MouseEvent) {
-    match &event {
-      MouseEvent::Press(mouse_button, x, y) => match &mouse_button {
-        MouseButton::Left => {
-          let pos = Point::new(*x, *y);
-          self.left_pressed = Some(pos);
-          self.left_last_known = Some(pos);
-        }
-        _ => (),
-      },
-      MouseEvent::Release(x, y) => {
-        self.left_released = Some(Point::new(*x, *y));
+
+  pub fn handle_mouse_event(&mut self, event: &TEvent) {
+    match event {
+      TEvent::MouseDown(pos) => {
+        self.left_pressed = Some(*pos);
+        self.left_last_known = Some(*pos);
+      }
+      TEvent::MouseUp(pos) => {
+        self.left_released = Some(*pos);
         self.left_last_known = None;
       }
-      MouseEvent::Hold(x, y) => {
-        let pos = Point::new(*x, *y);
+      TEvent::Drag(pos) => {
+        let p = *pos;
         if let Some(v) = self.left_last_known {
-          self.left_held = Some(pos);
-          self.left_hover = plot_line(pos, v);
+          self.left_held = Some(p);
+          self.left_hover = plot_line(p, v);
         } else {
-          self.left_hover = vec![pos];
+          self.left_hover = vec![p];
         }
-        self.left_last_known = Some(pos);
+        self.left_last_known = Some(p);
       }
+      _ => (),
     }
   }
+
   pub fn reset(&mut self) {
     self.left_pressed = None;
     self.left_released = None;
@@ -77,18 +81,15 @@ impl State {
   pub fn was_key_pressed(&self, key: &Key) -> bool {
     self.pressed_keys.contains(&key)
   }
-  pub fn track_terminal_events(&mut self, recv: &Receiver<Event>) {
+  pub fn track_terminal_events(&mut self, recv: &Receiver<TEvent>) {
     loop {
       self.terminal_size = term::size();
       if let Ok(result) = recv.try_recv() {
         match &result {
-          Event::Key(key) => {
+          TEvent::Key(key) => {
             self.pressed_keys.insert(*key);
           }
-          Event::Mouse(e) => {
-            self.mouse_events.handle_mouse_event(e);
-          }
-          _ => (),
+          e => self.mouse_events.handle_mouse_event(e),
         }
       } else {
         break;
