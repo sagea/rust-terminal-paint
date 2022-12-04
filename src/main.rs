@@ -1,8 +1,10 @@
 mod application;
 mod border;
+mod bounds;
 mod brush;
 mod canvas;
 mod line_processor;
+mod mouse;
 mod point;
 mod side_menu;
 mod state;

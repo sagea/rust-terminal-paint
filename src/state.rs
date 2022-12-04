@@ -3,64 +3,14 @@ use std::{collections::HashSet, sync::mpsc::Receiver};
 use termion::event::Key;
 
 use crate::{
+  bounds::Bounds,
   brush::BrushState,
   canvas::CanvasState,
-  line_processor::plot_line,
+  mouse::MouseEventTracker,
   point::Point,
   term::{self, TEvent},
   tool::ToolState,
 };
-
-pub struct MouseEventTracker {
-  pub left_pressed: Option<Point>,
-  pub left_released: Option<Point>,
-  pub left_held: Option<Point>,
-  pub left_hover: Vec<Point>,
-  pub left_last_known: Option<Point>,
-}
-
-impl MouseEventTracker {
-  pub fn new() -> Self {
-    MouseEventTracker {
-      left_pressed: None,
-      left_released: None,
-      left_held: None,
-      left_hover: vec![],
-      left_last_known: None,
-    }
-  }
-
-  pub fn handle_mouse_event(&mut self, event: &TEvent) {
-    match event {
-      TEvent::MouseDown(pos) => {
-        self.left_pressed = Some(*pos);
-        self.left_last_known = Some(*pos);
-      }
-      TEvent::MouseUp(pos) => {
-        self.left_released = Some(*pos);
-        self.left_last_known = None;
-      }
-      TEvent::Drag(pos) => {
-        let p = *pos;
-        if let Some(v) = self.left_last_known {
-          self.left_held = Some(p);
-          self.left_hover = plot_line(p, v);
-        } else {
-          self.left_hover = vec![p];
-        }
-        self.left_last_known = Some(p);
-      }
-      _ => (),
-    }
-  }
-
-  pub fn reset(&mut self) {
-    self.left_pressed = None;
-    self.left_released = None;
-    self.left_held = None;
-    self.left_hover = vec![];
-  }
-}
 
 pub struct State {
   pub brush: BrushState,
@@ -105,6 +55,9 @@ impl State {
 impl Default for State {
   fn default() -> Self {
     let terminal_size = term::size();
+    let brush_menu_width = 20;
+    let canvas_offset = Point::new(brush_menu_width, 0);
+
     State {
       brush: BrushState::new(),
       tools: ToolState::new(),
@@ -112,7 +65,10 @@ impl Default for State {
       pressed_keys: HashSet::new(),
       mouse_events: MouseEventTracker::new(),
       terminal_size,
-      canvas_state: CanvasState::new(terminal_size),
+      canvas_state: CanvasState::new(Bounds {
+        size: terminal_size - canvas_offset,
+        offset: canvas_offset,
+      }),
     }
   }
 }

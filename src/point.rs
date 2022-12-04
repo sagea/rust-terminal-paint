@@ -44,6 +44,25 @@ impl_op_ex!(+ |a: &Point, b: &Point| -> Point { Point { x: a.x + b.x, y: a.y + b
 impl_op_ex!(+ |a: &Point, b: &TuplePoint| -> Point { Point { x: a.x + b.0, y: a.y + b.1 } });
 impl_op_ex!(+ |a: &TuplePoint, b: &Point| -> Point { Point { x: a.0 + b.x, y: a.1 + b.y } });
 
+impl_op_ex!(-|a: &Point, b: &Point| -> Point {
+  Point {
+    x: a.x - b.x,
+    y: a.y - b.y,
+  }
+});
+impl_op_ex!(-|a: &Point, b: &TuplePoint| -> Point {
+  Point {
+    x: a.x - b.0,
+    y: a.y - b.1,
+  }
+});
+impl_op_ex!(-|a: &TuplePoint, b: &Point| -> Point {
+  Point {
+    x: a.0 - b.x,
+    y: a.1 - b.y,
+  }
+});
+
 #[cfg(test)]
 mod tests {
   use crate::point::Point;

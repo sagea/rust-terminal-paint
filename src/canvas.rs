@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{point::Point, state::State, term, tool::Tool};
+use crate::{bounds::Bounds, point::Point, state::State, term, tool::Tool};
 
 pub struct SingleCanvasUpdate {
   pub brush: String,
@@ -20,17 +20,19 @@ impl SingleCanvasUpdate {
 }
 
 pub struct CanvasState {
-  size: Point,
   full_buffer: Vec<String>,
   updates: Vec<SingleCanvasUpdate>,
+  bounds: Bounds,
 }
 
 impl CanvasState {
-  pub fn new(size: Point) -> CanvasState {
-    let row = (0..size.x + 1).map(|_| " ").collect::<String>();
-    let full_buffer = (0..size.y).map(|_| row.clone()).collect::<Vec<String>>();
+  pub fn new(bounds: Bounds) -> CanvasState {
+    let row = (0..bounds.size.x + 1).map(|_| " ").collect::<String>();
+    let full_buffer = (0..bounds.size.y)
+      .map(|_| row.clone())
+      .collect::<Vec<String>>();
     CanvasState {
-      size,
+      bounds,
       full_buffer,
       updates: vec![],
     }
@@ -46,8 +48,8 @@ impl CanvasState {
 
   pub fn clear_all(&mut self) {
     let mut pixels = vec![];
-    for x in 0..self.size.x {
-      for y in 0..self.size.y {
+    for x in 0..self.bounds.size.x {
+      for y in 0..self.bounds.size.y {
         pixels.push(Point::new(x, y));
       }
     }
@@ -110,47 +112,46 @@ pub fn fill_paint(state: &State, start: Point, containment: &(Point, Point)) -> 
   result
 }
 
-pub fn handle_tool_erasor(
-  state: &State,
-  canvas_containment: &(Point, Point),
-) -> SingleCanvasUpdate {
+pub fn handle_tool_erasor(state: &State, canvas_bounds: &Bounds) -> SingleCanvasUpdate {
   SingleCanvasUpdate::new(
     " ".to_string(),
     state
       .mouse_events
       .left_hover
       .iter()
-      .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
+      .filter(|pos| canvas_bounds.contains_point(pos))
       .copied()
       .collect::<Vec<Point>>(),
   )
 }
 
-pub fn handle_tool_brush(state: &State, canvas_containment: &(Point, Point)) -> SingleCanvasUpdate {
+pub fn handle_tool_brush(state: &State, canvas_bounds: &Bounds) -> SingleCanvasUpdate {
   SingleCanvasUpdate::new(
     state.brush.selected.clone(),
     state
       .mouse_events
       .left_hover
       .iter()
-      .filter(|pos| pos.is_inbetween(canvas_containment.0, canvas_containment.1))
+      .filter(|pos| canvas_bounds.contains_point(pos))
       .copied()
       .collect::<Vec<Point>>(),
   )
 }
 
-pub fn handle_tool_paint(
-  state: &mut State,
-  canvas_containment: &(Point, Point),
-) -> SingleCanvasUpdate {
-  let canvas_dimensions_start = Point::new(state.brush_menu_width, 0);
-  let canvas_dimensions_end = state.terminal_size;
+pub fn handle_tool_paint(state: &mut State, canvas_bounds: &Bounds) -> SingleCanvasUpdate {
   let f = &state;
   if let Some(pos) = f.mouse_events.left_pressed {
-    if pos.is_inbetween(canvas_dimensions_start, canvas_dimensions_end) {
+    if canvas_bounds.contains_point(&pos) {
       return SingleCanvasUpdate::new(
         state.brush.selected.clone(),
-        fill_paint(state, pos, canvas_containment),
+        fill_paint(
+          state,
+          pos,
+          &(
+            canvas_bounds.offset,
+            canvas_bounds.offset + canvas_bounds.size,
+          ),
+        ),
       );
     }
   }
@@ -158,11 +159,10 @@ pub fn handle_tool_paint(
 }
 
 pub async fn update_canvas(state: &mut State) {
-  let canvas_containment = (Point::new(state.brush_menu_width, 0), state.terminal_size);
   let updates = match &state.tools.selected {
-    Tool::Brush => handle_tool_brush(state, &canvas_containment),
-    Tool::Erasor => handle_tool_erasor(state, &canvas_containment),
-    Tool::Paint => handle_tool_paint(state, &canvas_containment),
+    Tool::Brush => handle_tool_brush(state, &state.canvas_state.bounds),
+    Tool::Erasor => handle_tool_erasor(state, &state.canvas_state.bounds),
+    Tool::Paint => handle_tool_paint(state, &state.canvas_state.bounds.clone()),
   };
   state.canvas_state.add_updates(updates);
 }
