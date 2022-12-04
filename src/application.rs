@@ -29,34 +29,36 @@ pub async fn start_application() {
   let cloned_components = Arc::clone(&components);
   let mut _is_first_render = true;
   loop {
-    listen_for_events(&cloned_state, &cloned_components, &stdin).await;
+    listen_for_events(&cloned_state, &stdin).await;
     {
       let state = cloned_state.lock().await;
       if state.was_key_pressed(&termion::event::Key::Ctrl('c')) {
         break;
       }
     }
-    render_ui(&cloned_state, &cloned_components).await;
+
+    phase_update_ui(&cloned_state, &cloned_components).await;
+    phase_render_ui(&cloned_state, &cloned_components).await;
     _is_first_render = false;
   }
   t::show();
   drop(stdout);
 }
 
-async fn listen_for_events(
-  state: &Arc<Mutex<State>>,
-  components: &Arc<Mutex<Comps>>,
-  events: &Receiver<TEvent>,
-) {
+async fn listen_for_events(state: &Arc<Mutex<State>>, events: &Receiver<TEvent>) {
   let mut state = state.lock().await;
-  let mut comps = components.lock().await;
   state.reset_terminal_events();
   state.track_terminal_events(events);
+}
+
+async fn phase_update_ui(state: &Arc<Mutex<State>>, components: &Arc<Mutex<Comps>>) {
+  let mut state = state.lock().await;
+  let mut comps = components.lock().await;
   comps.side_menu.update(&mut state).await;
   comps.canvas.update(&mut state).await;
 }
 
-async fn render_ui(state: &Arc<Mutex<State>>, components: &Arc<Mutex<Comps>>) {
+async fn phase_render_ui(state: &Arc<Mutex<State>>, components: &Arc<Mutex<Comps>>) {
   let mut state = state.lock().await;
   let mut comps = components.lock().await;
   comps.side_menu.render(&mut state).await;
