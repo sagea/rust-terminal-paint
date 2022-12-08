@@ -1,4 +1,4 @@
-use crate::{point::Point, pt};
+use crate::point::Point;
 
 #[derive(Clone, Copy)]
 pub struct Bounds {
