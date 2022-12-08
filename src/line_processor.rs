@@ -1,4 +1,4 @@
-use crate::point::Point;
+use crate::{point::Point, pt};
 
 pub fn get_increment(iterations: f32, a: f32, b: f32) -> f32 {
   let diff = b - a;
@@ -24,7 +24,7 @@ pub fn plot_line(start: Point, end: Point) -> Vec<Point> {
     let x = x0 + (i as f32 * x_slope).round();
     let y = y0 + (i as f32 * y_slope).round();
 
-    list.push(Point::new(x as u16, y as u16));
+    list.push(pt!(x as u16, y as u16));
     i += 1;
   }
   list
@@ -33,69 +33,59 @@ pub fn plot_line(start: Point, end: Point) -> Vec<Point> {
 #[cfg(test)]
 mod tests {
   use super::plot_line;
-  use crate::point::Point;
+  use crate::{point::Point, pt};
 
   #[test]
   pub fn should_draw_line_inbetween_points_1() {
-    let start = Point::new(60, 29);
-    let end = Point::new(62, 27);
+    let start = pt!(60, 29);
+    let end = pt!(62, 27);
     let result = plot_line(start, end);
-    let expected_result = vec![Point::new(60, 29), Point::new(61, 28), Point::new(62, 27)];
+    let expected_result = vec![pt!(60, 29), pt!(61, 28), pt!(62, 27)];
 
     assert_eq!(result, expected_result, "Should have been equal");
   }
   #[test]
   pub fn should_draw_line_inbetween_points_2() {
-    let start = Point::new(50, 50);
-    let end = Point::new(53, 53);
+    let start = pt!(50, 50);
+    let end = pt!(53, 53);
     let result = plot_line(start, end);
-    let expected_result = vec![
-      Point::new(50, 50),
-      Point::new(51, 51),
-      Point::new(52, 52),
-      Point::new(53, 53),
-    ];
+    let expected_result = vec![pt!(50, 50), pt!(51, 51), pt!(52, 52), pt!(53, 53)];
 
     assert_eq!(result, expected_result, "Should have been equal");
   }
 
   #[test]
   pub fn should_draw_line_inbetween_points_3() {
-    let start = Point::new(50, 50);
-    let end = Point::new(53, 50);
+    let start = pt!(50, 50);
+    let end = pt!(53, 50);
     let result = plot_line(start, end);
-    let expected_result = vec![
-      Point::new(50, 50),
-      Point::new(51, 50),
-      Point::new(52, 50),
-      Point::new(53, 50),
-    ];
+    let expected_result = vec![pt!(50, 50), pt!(51, 50), pt!(52, 50), pt!(53, 50)];
 
     assert_eq!(result, expected_result, "Should have been equal");
   }
 
   #[test]
   pub fn should_draw_line_inbetween_points_4() {
-    let start = Point::new(50, 50);
-    let end = Point::new(50, 50);
+    let start = pt!(50, 50);
+    let end = pt!(50, 50);
     let result = plot_line(start, end);
-    let expected_result = vec![Point::new(50, 50)];
+    let expected_result = vec![pt!(50, 50)];
 
     assert_eq!(result, expected_result, "Should have been equal");
   }
 
   #[test]
   pub fn should_draw_line_inbetween_points_5() {
-    let start = Point::new(50, 50);
-    let end = Point::new(55, 51);
+    let start = pt!(50, 50);
+    let end = pt!(55, 51);
     let result = plot_line(start, end);
     let expected_result = vec![
-      Point::new(50, 50),
-      Point::new(51, 50),
-      Point::new(52, 50),
-      Point::new(53, 51),
-      Point::new(54, 51),
-      Point::new(55, 51),
+      pt!(50, 50),
+      pt!(51, 50),
+      pt!(52, 50),
+      pt!(53, 51),
+      pt!(54, 51),
+      pt!(55, 51),
     ];
 
     assert_eq!(result, expected_result, "Should have been equal");

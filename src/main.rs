@@ -3,6 +3,7 @@ mod border;
 mod bounds;
 mod brush;
 mod canvas;
+mod keys;
 mod line_processor;
 mod mouse;
 mod point;

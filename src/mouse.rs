@@ -20,8 +20,7 @@ impl MouseEventTracker {
       left_last_known: None,
     }
   }
-
-  pub fn handle_mouse_event(&mut self, event: &TEvent) {
+  pub fn handle_terminal_event(&mut self, event: &TEvent) {
     match event {
       TEvent::MouseDown(pos) => {
         self.left_pressed = Some(*pos);

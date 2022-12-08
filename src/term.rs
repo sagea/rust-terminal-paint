@@ -6,6 +6,7 @@ use termion::{color, cursor, terminal_size};
 use termion::{event::Event, input::MouseTerminal};
 
 use crate::point::Point;
+use crate::pt;
 
 #[derive(Debug)]
 pub enum TMouseEvent {}
@@ -27,9 +28,9 @@ pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
       let event = c.unwrap();
       let e = match &event {
         Event::Mouse(mouse_event) => Some(match &mouse_event {
-          MouseEvent::Press(_mouse_btn, x, y) => TEvent::MouseDown(Point::new(x - 1, y - 1)),
-          MouseEvent::Release(x, y) => TEvent::MouseUp(Point::new(x - 1, y - 1)),
-          MouseEvent::Hold(x, y) => TEvent::Drag(Point::new(x - 1, y - 1)),
+          MouseEvent::Press(_mouse_btn, x, y) => TEvent::MouseDown(pt!(x - 1, y - 1)),
+          MouseEvent::Release(x, y) => TEvent::MouseUp(pt!(x - 1, y - 1)),
+          MouseEvent::Hold(x, y) => TEvent::Drag(pt!(x - 1, y - 1)),
         }),
         Event::Key(key) => Some(TEvent::Key(*key)),
         _ => None,
@@ -95,7 +96,7 @@ pub fn fg_green(text: &str) -> String {
 
 pub fn draw_vertical_line(x: u16, y_start: u16, y_end: u16, str: String) {
   for y in y_start..y_end {
-    go_to(Point::new(x, y));
+    go_to(pt!(x, y));
     print!("{str}");
   }
 }

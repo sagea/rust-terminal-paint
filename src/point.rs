@@ -34,11 +34,18 @@ impl Point {
     }
     true
   }
-
-  pub fn zero() -> Self {
-    Point::from(0)
-  }
 }
+
+#[macro_export]
+macro_rules! pt {
+  ($x:expr) => {
+    pt!($x, $x)
+  };
+  ($x:expr, $y:expr) => {
+    Point::new($x, $y)
+  };
+}
+
 type TuplePoint = (u16, u16);
 impl_op_ex!(+ |a: &Point, b: &Point| -> Point { Point { x: a.x + b.x, y: a.y + b.y } });
 impl_op_ex!(+ |a: &Point, b: &TuplePoint| -> Point { Point { x: a.x + b.0, y: a.y + b.1 } });
