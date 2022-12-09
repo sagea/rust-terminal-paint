@@ -2,7 +2,9 @@ use std::collections::HashSet;
 
 use termion::event::Key;
 
-use crate::term::TEvent;
+use crate::{singleton, term::TEvent};
+
+singleton!(pub static KEY_STATE: KeyState = KeyState::new());
 
 #[derive(Default)]
 pub struct KeyState {

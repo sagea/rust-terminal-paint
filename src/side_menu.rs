@@ -1,11 +1,12 @@
 use termion::color;
 
 use crate::border::calculate_boder_size;
+use crate::brush::{BRUSH_MENU_WIDTH, BRUSH_STATE};
+use crate::canvas::CANVAS_STATE;
+use crate::mouse::MOUSE_EVENTS;
 use crate::point::Point;
-use crate::state::{
-  BRUSH_MENU_WIDTH, BRUSH_STATE, CANVAS_STATE, MOUSE_EVENTS, TERMINAL_SIZE, TOOL_STATE,
-};
-use crate::tool::Tool;
+use crate::term::TERMINAL_SIZE;
+use crate::tool::{Tool, TOOL_STATE};
 use crate::{border, pt, read, term, writ};
 
 pub async fn update_side_menu() {
@@ -38,8 +39,7 @@ impl ClearButton {
     if let Some(pressed_position) = read!(MOUSE_EVENTS).left_pressed {
       let end = at + calculate_boder_size("Clear All");
       if pressed_position.is_inbetween(at, end) {
-        let mut canvas_state = CANVAS_STATE.write().await;
-        canvas_state.clear_all();
+        writ!(CANVAS_STATE).clear_all();
       }
     }
   }
@@ -113,8 +113,7 @@ impl BrushMenu {
         None
       });
       if let Some(item) = selected {
-        let mut brush_state = BRUSH_STATE.write().await;
-        brush_state.selected = item.to_string();
+        writ!(BRUSH_STATE).selected = item.to_string();
       }
     }
   }

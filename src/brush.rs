@@ -1,3 +1,8 @@
+use crate::singleton;
+
+pub static BRUSH_MENU_WIDTH: u16 = 20;
+singleton!(pub static BRUSH_STATE: BrushState = BrushState::new());
+
 pub fn get_brush_list() -> Vec<String> {
   let list = vec![
     "█", "▓", "▒", "░", "▀", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "▉", "▊", "▋", "▌", "▍", "▎", "▏",

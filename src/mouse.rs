@@ -1,4 +1,6 @@
-use crate::{line_processor::plot_line, point::Point, term::TEvent};
+use crate::{line_processor::plot_line, point::Point, singleton, term::TEvent};
+
+singleton!(pub static MOUSE_EVENTS: MouseEventTracker = MouseEventTracker::new());
 
 pub struct MouseEventTracker {
   pub left_pressed: Option<Point>,

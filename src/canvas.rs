@@ -2,13 +2,20 @@ use std::collections::HashSet;
 
 use crate::{
   bounds::Bounds,
+  brush::{BRUSH_MENU_WIDTH, BRUSH_STATE},
+  mouse::MOUSE_EVENTS,
   point::Point,
-  pt, read,
-  state::{get, BRUSH_STATE, CANVAS_STATE, MOUSE_EVENTS, TOOL_STATE},
+  pt, read, singleton,
+  state::get,
   term,
-  tool::Tool,
+  tool::{Tool, TOOL_STATE},
   writ,
 };
+
+singleton!(pub static CANVAS_STATE: CanvasState = CanvasState::new(Bounds {
+  size: term::size() - pt!(BRUSH_MENU_WIDTH, 0),
+  offset: pt!(BRUSH_MENU_WIDTH, 0),
+}));
 
 pub struct SingleCanvasUpdate {
   pub brush: String,

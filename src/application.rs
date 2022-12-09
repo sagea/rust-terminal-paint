@@ -5,8 +5,9 @@ use tokio::sync::Mutex;
 
 use crate::canvas::Canvas;
 
+use crate::keys::KEY_STATE;
+use crate::mouse::MOUSE_EVENTS;
 use crate::side_menu::SideMenu;
-use crate::state::{KEY_STATE, MOUSE_EVENTS};
 use crate::term::TEvent;
 use crate::{read, term as t, writ};
 

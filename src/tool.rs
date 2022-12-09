@@ -1,3 +1,7 @@
+use crate::singleton;
+
+singleton!(pub static TOOL_STATE: ToolState = ToolState::new());
+
 #[derive(strum_macros::Display, PartialEq, Eq, Clone, Copy)]
 pub enum Tool {
   Brush,

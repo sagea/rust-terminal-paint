@@ -6,7 +6,7 @@ use termion::{color, cursor, terminal_size};
 use termion::{event::Event, input::MouseTerminal};
 
 use crate::point::Point;
-use crate::pt;
+use crate::{pt, singleton};
 
 #[derive(Debug)]
 pub enum TMouseEvent {}
@@ -17,6 +17,8 @@ pub enum TEvent {
   Drag(Point),
   Key(Key),
 }
+
+singleton!(pub static TERMINAL_SIZE: Point = size());
 
 pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
   use std::io::stdin;
