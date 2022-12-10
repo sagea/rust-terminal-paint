@@ -1,4 +1,4 @@
-use crate::{line_processor::plot_line, point::Point, singleton, term::TEvent};
+use crate::{app_events::AppEvent, line_processor::plot_line, point::Point, singleton};
 
 singleton!(pub static MOUSE_EVENTS: MouseEventTracker = MouseEventTracker::new());
 
@@ -22,17 +22,17 @@ impl MouseEventTracker {
       left_last_known: None,
     }
   }
-  pub fn handle_terminal_event(&mut self, event: &TEvent) {
+  pub fn handle_terminal_event(&mut self, event: &AppEvent) {
     match event {
-      TEvent::MouseDown(pos) => {
+      AppEvent::MouseDown(pos) => {
         self.left_pressed = Some(*pos);
         self.left_last_known = Some(*pos);
       }
-      TEvent::MouseUp(pos) => {
+      AppEvent::MouseUp(pos) => {
         self.left_released = Some(*pos);
         self.left_last_known = None;
       }
-      TEvent::Drag(pos) => {
+      AppEvent::Drag(pos) => {
         let p = *pos;
         self.left_drag = Some(p);
         if let Some(v) = self.left_last_known {

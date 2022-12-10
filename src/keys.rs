@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use termion::event::Key;
 
-use crate::{singleton, term::TEvent};
+use crate::{app_events::AppEvent, singleton};
 
 singleton!(pub static KEY_STATE: KeyState = KeyState::new());
 
@@ -20,8 +20,8 @@ impl KeyState {
   pub fn reset(&mut self) {
     self.pressed_keys.clear();
   }
-  pub fn handle_terminal_event(&mut self, event: &TEvent) {
-    if let TEvent::Key(key) = &event {
+  pub fn handle_terminal_event(&mut self, event: &AppEvent) {
+    if let AppEvent::Key(key) = &event {
       self.pressed_keys.insert(*key);
     }
   }

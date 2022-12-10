@@ -1,3 +1,4 @@
+mod app_events;
 mod application;
 mod border;
 mod bounds;

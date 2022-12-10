@@ -1,26 +1,17 @@
 use std::io::Stdout;
 use std::{io::stdout, sync::mpsc};
-use termion::event::{Key, MouseEvent};
+use termion::event::MouseEvent;
 use termion::raw::IntoRawMode;
 use termion::{color, cursor, terminal_size};
 use termion::{event::Event, input::MouseTerminal};
 
+use crate::app_events::AppEvent;
 use crate::point::Point;
 use crate::{pt, singleton};
 
-#[derive(Debug)]
-pub enum TMouseEvent {}
-#[derive(Debug)]
-pub enum TEvent {
-  MouseDown(Point),
-  MouseUp(Point),
-  Drag(Point),
-  Key(Key),
-}
-
 singleton!(pub static TERMINAL_SIZE: Point = size());
 
-pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
+pub fn setup_stdin() -> mpsc::Receiver<AppEvent> {
   use std::io::stdin;
   use termion::input::TermRead;
   let (sender, receiver) = mpsc::channel();
@@ -30,11 +21,11 @@ pub fn setup_stdin() -> mpsc::Receiver<TEvent> {
       let event = c.unwrap();
       let e = match &event {
         Event::Mouse(mouse_event) => Some(match &mouse_event {
-          MouseEvent::Press(_mouse_btn, x, y) => TEvent::MouseDown(pt!(x - 1, y - 1)),
-          MouseEvent::Release(x, y) => TEvent::MouseUp(pt!(x - 1, y - 1)),
-          MouseEvent::Hold(x, y) => TEvent::Drag(pt!(x - 1, y - 1)),
+          MouseEvent::Press(_mouse_btn, x, y) => AppEvent::MouseDown(pt!(x - 1, y - 1)),
+          MouseEvent::Release(x, y) => AppEvent::MouseUp(pt!(x - 1, y - 1)),
+          MouseEvent::Hold(x, y) => AppEvent::Drag(pt!(x - 1, y - 1)),
         }),
-        Event::Key(key) => Some(TEvent::Key(*key)),
+        Event::Key(key) => Some(AppEvent::Key(*key)),
         _ => None,
       };
       if let Some(ev) = e {

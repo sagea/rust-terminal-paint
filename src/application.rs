@@ -3,12 +3,12 @@ use std::sync::mpsc::Receiver;
 use termion::event::Key;
 use tokio::sync::Mutex;
 
+use crate::app_events::AppEvent;
 use crate::canvas::Canvas;
 
 use crate::keys::KEY_STATE;
 use crate::mouse::MOUSE_EVENTS;
 use crate::side_menu::SideMenu;
-use crate::term::TEvent;
 use crate::{read, term as t, writ};
 
 pub struct Comps {
@@ -47,7 +47,7 @@ pub async fn start_application() {
 async fn should_stop_application() -> bool {
   read!(KEY_STATE).was_key_pressed(&Key::Ctrl('c'))
 }
-async fn listen_for_events(events: &Receiver<TEvent>) {
+async fn listen_for_events(events: &Receiver<AppEvent>) {
   writ!(MOUSE_EVENTS | e | { e.reset() });
   writ!(KEY_STATE | e | { e.reset() });
 
